@@ -5,7 +5,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import wizardgame.graphics.Window;
+import wizardgame.core.Handler;
+import wizardgame.core.Window;
 
 /**
  *
@@ -15,9 +16,13 @@ public class Game extends Canvas implements Runnable{
 
     private boolean isRunning = false;
     private Thread thread;
+    private Handler handler;
     
     public Game(){
         new Window( 1000, 563, "Wizard Game", this );
+        start();
+        
+        handler = new Handler();
     }
     
     private void start(){
@@ -76,7 +81,7 @@ public class Game extends Canvas implements Runnable{
     
     // Update
     public void tick(){
-        
+        handler.tick();
     }
     
     // Render
@@ -89,6 +94,8 @@ public class Game extends Canvas implements Runnable{
         }
         
         Graphics g = bs.getDrawGraphics();
+        
+        handler.render( g );
         
         g.dispose();
         bs.show();
