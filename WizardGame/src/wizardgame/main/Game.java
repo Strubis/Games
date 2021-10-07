@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import wizardgame.core.Handler;
 import wizardgame.core.Window;
+import wizardgame.utils.Box;
+import wizardgame.utils.ID;
 
 /**
  *
@@ -23,6 +25,7 @@ public class Game extends Canvas implements Runnable{
         start();
         
         handler = new Handler();
+        handler.addObject( new Box( 100, 100, ID.Block ) );
     }
     
     private void start(){
