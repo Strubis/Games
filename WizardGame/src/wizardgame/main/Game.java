@@ -1,14 +1,14 @@
 package wizardgame.main;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import wizardgame.characters.Wizard;
 import wizardgame.core.Handler;
 import wizardgame.core.Window;
-import wizardgame.utils.Box;
 import wizardgame.utils.ID;
+import wizardgame.utils.KeyInput;
 
 /**
  *
@@ -25,7 +25,10 @@ public class Game extends Canvas implements Runnable{
         start();
         
         handler = new Handler();
-        handler.addObject( new Box( 100, 100, ID.Block ) );
+        //handler.addObject( new Box( 100, 100, ID.Block ) );
+        this.addKeyListener( new KeyInput( handler ) );
+        
+        handler.addObject( new Wizard( 100, 100, ID.Player, handler ) );
     }
     
     private void start(){
@@ -97,6 +100,9 @@ public class Game extends Canvas implements Runnable{
         }
         
         Graphics g = bs.getDrawGraphics();
+        
+        g.setColor(Color.black);
+        g.fillRect(0, 0, 1000, 563);
         
         handler.render( g );
         
