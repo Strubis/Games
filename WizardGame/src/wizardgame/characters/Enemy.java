@@ -3,10 +3,13 @@ package wizardgame.characters;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 import wizardgame.core.GameObject;
 import wizardgame.core.Handler;
+import wizardgame.utils.Animation;
 import wizardgame.utils.ID;
+import wizardgame.utils.SpriteSheet;
 
 /**
  *
@@ -15,12 +18,20 @@ import wizardgame.utils.ID;
 public class Enemy extends GameObject{
 
     private Handler handler;
+    private BufferedImage[] enemyImage = new BufferedImage[3];
+    private Animation anim;
     private Random r = new Random();
     private int choose = 0, hp = 100;
     
-    public Enemy(int x, int y, ID id, Handler handler) {
-        super(x, y, id);
+    public Enemy(int x, int y, ID id, Handler handler, SpriteSheet ss) {
+        super(x, y, id, ss);
         this.handler = handler;
+        
+        enemyImage[0] = ss.grabImage( 4, 1, 32, 32);
+        enemyImage[1] = ss.grabImage( 5, 1, 32, 32);
+        enemyImage[2] = ss.grabImage( 6, 1, 32, 32);
+        
+        anim = new Animation(3, enemyImage[0], enemyImage[1], enemyImage[2] );
     }
 
     @Override
@@ -53,13 +64,13 @@ public class Enemy extends GameObject{
             }
         }
         
+        anim.runAnimation();
         if( hp <= 0 ) handler.removeObject(this);
     }
 
     @Override
     public void render(Graphics g) {
-        g.setColor(Color.YELLOW);
-        g.fillRect(x, y, 32, 32);
+        anim.drawAnimation( g, x, y, 0 );
     }
 
     @Override

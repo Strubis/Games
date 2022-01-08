@@ -3,10 +3,13 @@ package wizardgame.characters;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import wizardgame.core.GameObject;
 import wizardgame.core.Handler;
 import wizardgame.main.Game;
+import wizardgame.utils.Animation;
 import wizardgame.utils.ID;
+import wizardgame.utils.SpriteSheet;
 
 /**
  *
@@ -16,12 +19,20 @@ public class Wizard extends GameObject{
     
     private final Handler handler;
     private Game game;
+    private BufferedImage[] wizardImage = new BufferedImage[3];
+    private Animation anim;
     
-    public Wizard(int x, int y, ID id, Handler handler, Game game) {
-        super(x, y, id);
+    public Wizard(int x, int y, ID id, Handler handler, Game game, SpriteSheet ss) {
+        super(x, y, id, ss);
         
         this.handler = handler;
         this.game = game;
+        
+        wizardImage[0] = ss.grabImage( 1, 1, 32, 48 );
+        wizardImage[1] = ss.grabImage( 2, 1, 32, 48 );
+        wizardImage[2] = ss.grabImage( 3, 1, 32, 48 );
+        
+        anim = new Animation( 3, wizardImage[0], wizardImage[1], wizardImage[2] );
     }
 
     @Override
@@ -42,6 +53,8 @@ public class Wizard extends GameObject{
         
         if( handler.isLeft() ) velX = -5;
         else if( !handler.isRight() ) velX = 0;
+        
+        anim.runAnimation();
     }
     
     private void collision(){
@@ -62,13 +75,21 @@ public class Wizard extends GameObject{
                 }
             }
             
+            if( tempObject.getId() == ID.Enemy ){
+                if( getBounds().intersects( tempObject.getBounds() ) ){
+                    game.hp--;
+                }
+            }
+            
         }
     }
     
     @Override
     public void render(Graphics g) {
-        g.setColor( Color.blue );
-        g.fillRect( x, y, 32, 48 );
+        if( velX == 0 && velY == 0 )
+            g.drawImage( wizardImage[0], x, y, null );
+        else
+            anim.drawAnimation( g, x, y, 0 );
     }
 
     @Override

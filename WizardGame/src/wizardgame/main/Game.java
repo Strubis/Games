@@ -17,6 +17,7 @@ import wizardgame.utils.BufferedImageLoader;
 import wizardgame.utils.ID;
 import wizardgame.utils.KeyInput;
 import wizardgame.utils.MouseInput;
+import wizardgame.utils.SpriteSheet;
 
 /**
  *
@@ -28,10 +29,15 @@ public class Game extends Canvas implements Runnable{
     private Thread thread;
     private Handler handler;
     private Camera camera;
+    private SpriteSheet ss;
     
     private BufferedImage level = null;
+    private BufferedImage spriteSheet = null;
     
-    public int ammo = 100;
+    // Elements
+    private BufferedImage floor = null;
+    
+    public int ammo = 100, hp = 100;
     
     public Game(){
         new Window( 1000, 563, "Wizard Game", this );
@@ -41,10 +47,15 @@ public class Game extends Canvas implements Runnable{
         camera = new Camera( 0, 0 );
         //handler.addObject( new Box( 100, 100, ID.Block ) );
         this.addKeyListener( new KeyInput( handler ) );
-        this.addMouseListener( new MouseInput(handler, camera, this));
         
         BufferedImageLoader loader = new BufferedImageLoader();
-        level = loader.loadImage( "/wizardgame/levels/WizardLevel.png" );
+        level = loader.loadImage( "/wizardgame/images/WizardLevel.png" );
+        spriteSheet = loader.loadImage( "/wizardgame/images/sprite_sheet.png" );
+        ss = new SpriteSheet( spriteSheet );
+        
+        floor = ss.grabImage( 4, 2, 32, 32 );
+        
+        this.addMouseListener( new MouseInput(handler, camera, this, ss));
         loadLevel( level );
         
         //handler.addObject( new Wizard( 100, 100, ID.Player, handler ) );
@@ -127,14 +138,29 @@ public class Game extends Canvas implements Runnable{
         Graphics g = bs.getDrawGraphics();
         Graphics2D g2d = (Graphics2D) g;
         
-        g.setColor(Color.red);
-        g.fillRect(0, 0, 1000, 563);
-        
         g2d.translate( -camera.getX(), -camera.getY() );
+        
+        for (int xx = 0; xx < 30*72; xx+=32) {
+            for (int yy = 0; yy < 30*72; yy+=32) {
+                g.drawImage( floor, xx, yy, null );
+            }
+        }
         
         handler.render( g );
         
         g2d.translate( camera.getX(), camera.getY() );
+        
+        // Bar life
+        g.setColor( Color.GRAY );
+        g.fillRect( 5, 5, 200, 32 );
+        g.setColor( Color.GREEN );
+        g.fillRect( 5, 5, hp * 2, 32 );
+        g.setColor( Color.BLACK );
+        g.drawRect( 5, 5, 200, 32 );
+        
+        // Ammo bar
+        g.setColor( Color.WHITE );
+        g.drawString( "Ammo: " + ammo, 5, 50 );
         
         g.dispose();
         bs.show();
@@ -154,16 +180,16 @@ public class Game extends Canvas implements Runnable{
                 int blue = ( pixel ) & 0xff;
                 
                 if( red == 255 )
-                    handler.addObject( new Block( xx*32, yy*32, ID.Block ) );
+                    handler.addObject( new Block( xx*32, yy*32, ID.Block, ss ) );
                 
                 if( blue == 255 && green == 0 )
-                    handler.addObject( new Wizard( xx*32, yy*32, ID.Player, handler, this ) );
+                    handler.addObject( new Wizard( xx*32, yy*32, ID.Player, handler, this, ss ) );
                 
                 if( green == 255 && blue == 0 )
-                    handler.addObject( new Enemy(xx*32, yy*32, ID.Enemy, handler));
+                    handler.addObject( new Enemy(xx*32, yy*32, ID.Enemy, handler, ss));
                 
                 if( green == 255 && blue == 255 )
-                    handler.addObject( new Crate(xx*32, yy*32, ID.Crate));
+                    handler.addObject( new Crate(xx*32, yy*32, ID.Crate, ss));
             }
         }
     }
