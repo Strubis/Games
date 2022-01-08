@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import wizardgame.characters.Block;
+import wizardgame.characters.Crate;
+import wizardgame.characters.Enemy;
 import wizardgame.characters.Wizard;
 import wizardgame.core.Camera;
 import wizardgame.core.Handler;
@@ -29,6 +31,8 @@ public class Game extends Canvas implements Runnable{
     
     private BufferedImage level = null;
     
+    public int ammo = 100;
+    
     public Game(){
         new Window( 1000, 563, "Wizard Game", this );
         start();
@@ -37,7 +41,7 @@ public class Game extends Canvas implements Runnable{
         camera = new Camera( 0, 0 );
         //handler.addObject( new Box( 100, 100, ID.Block ) );
         this.addKeyListener( new KeyInput( handler ) );
-        this.addMouseListener( new MouseInput(handler, camera));
+        this.addMouseListener( new MouseInput(handler, camera, this));
         
         BufferedImageLoader loader = new BufferedImageLoader();
         level = loader.loadImage( "/wizardgame/levels/WizardLevel.png" );
@@ -152,8 +156,14 @@ public class Game extends Canvas implements Runnable{
                 if( red == 255 )
                     handler.addObject( new Block( xx*32, yy*32, ID.Block ) );
                 
-                if( blue == 255 )
-                    handler.addObject( new Wizard( xx*32, yy*32, ID.Player, handler ) );
+                if( blue == 255 && green == 0 )
+                    handler.addObject( new Wizard( xx*32, yy*32, ID.Player, handler, this ) );
+                
+                if( green == 255 && blue == 0 )
+                    handler.addObject( new Enemy(xx*32, yy*32, ID.Enemy, handler));
+                
+                if( green == 255 && blue == 255 )
+                    handler.addObject( new Crate(xx*32, yy*32, ID.Crate));
             }
         }
     }
