@@ -14,6 +14,7 @@ import wizardgame.core.Window;
 import wizardgame.utils.BufferedImageLoader;
 import wizardgame.utils.ID;
 import wizardgame.utils.KeyInput;
+import wizardgame.utils.MouseInput;
 
 /**
  *
@@ -36,6 +37,7 @@ public class Game extends Canvas implements Runnable{
         camera = new Camera( 0, 0 );
         //handler.addObject( new Box( 100, 100, ID.Block ) );
         this.addKeyListener( new KeyInput( handler ) );
+        this.addMouseListener( new MouseInput(handler, camera));
         
         BufferedImageLoader loader = new BufferedImageLoader();
         level = loader.loadImage( "/wizardgame/levels/WizardLevel.png" );
